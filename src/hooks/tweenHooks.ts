@@ -356,12 +356,15 @@ export const useTweenAnimation = <T extends TweenData>(
   );
 
   const reverse = useCallback(() => {
+    if (onEvent) {
+      onEvent(TweenEvent.AnimationInvert)
+    }
     updateTweenState({
       type,
       duration,
       direction: direction === TweenDirection.Forward ? TweenDirection.Backward : TweenDirection.Forward
     });
-  }, [duration, direction, type]);
+  }, [duration, direction, type, onEvent]);
 
   const setTime = useCallback(
     (time: number) => {
