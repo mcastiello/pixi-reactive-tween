@@ -16,9 +16,9 @@ import {
   Sine,
   SteppedEase,
   Strong
-} from "gsap";
-import { AnimationContext } from "pixi-reactive";
-import { useCallback, useContext, useEffect, useReducer, useState } from "react";
+} from 'gsap';
+import { AnimationContext } from 'pixi-reactive';
+import { useCallback, useContext, useEffect, useReducer, useState } from 'react';
 import {
   EaseFunction,
   Easing,
@@ -30,7 +30,7 @@ import {
   TweenDirection,
   TweenEvent,
   TweenState
-} from "../types";
+} from '../types';
 
 const defaultCallback: EaseFunction = (value: number) => value;
 
@@ -209,101 +209,104 @@ export const useTweenAnimation = <T extends TweenData>(
   easeParams?: string,
   onEvent?: (event: TweenEvent) => void
 ): TweenContextType<T> => {
-  const tweenReducer = useCallback((tween: Tween, action: TweenAction): Tween => {
-    const currentPosition = action.duration * tween.progress;
-    const { elapsed = 0, duration } = action;
-    let direction: TweenDirection = action.direction || tween.direction;
-    let progress;
+  const tweenReducer = useCallback(
+    (tween: Tween, action: TweenAction): Tween => {
+      const currentPosition = action.duration * tween.progress;
+      const { elapsed = 0, duration } = action;
+      let direction: TweenDirection = action.direction || tween.direction;
+      let progress;
 
-    switch (action.type) {
-      case TweenState.Reset:
-        return {
-          direction: TweenDirection.Forward,
-          progress: 0
-        };
-      case TweenState.Set:
-        return {
-          direction: TweenDirection.Forward,
-          progress: (elapsed % duration) / duration
-        };
-      case TweenState.Play:
-        switch (direction) {
-          case TweenDirection.Forward:
-            progress = Math.min(currentPosition + elapsed, duration) / duration;
-            if (progress === 1 && onEvent) {
-              onEvent(TweenEvent.AnimationComplete)
-            }
-            return {
-              direction,
-              progress
-            };
-          case TweenDirection.Backward:
-            progress = Math.min(currentPosition - elapsed, duration) / duration;
-            if (progress === 0 && onEvent) {
-              onEvent(TweenEvent.AnimationComplete)
-            }
-            return {
-              direction,
-              progress
-            };
-        }
-        break;
-      case TweenState.Loop:
-        switch (direction) {
-          case TweenDirection.Forward:
-            progress = (currentPosition + elapsed) % duration;
-            if (progress < currentPosition  && onEvent) {
-              onEvent(TweenEvent.AnimationIterate)
-            }
-            return {
-              direction,
-              progress: progress / duration
-            };
-          case TweenDirection.Backward:
-            progress = (currentPosition - elapsed) % duration;
-            if (progress > currentPosition  && onEvent) {
-              onEvent(TweenEvent.AnimationIterate)
-            }
-            return {
-              direction,
-              progress: progress / duration
-            };
-        }
-        break;
-      case TweenState.Alternate:
-        switch (direction) {
-          case TweenDirection.Forward:
-            progress = currentPosition + elapsed;
-            if (progress > duration) {
-              direction = TweenDirection.Backward;
-              progress = duration - (progress % duration);
-              if (onEvent) {
-                onEvent(TweenEvent.AnimationInvert)
+      switch (action.type) {
+        case TweenState.Reset:
+          return {
+            direction: TweenDirection.Forward,
+            progress: 0
+          };
+        case TweenState.Set:
+          return {
+            direction: TweenDirection.Forward,
+            progress: (elapsed % duration) / duration
+          };
+        case TweenState.Play:
+          switch (direction) {
+            case TweenDirection.Forward:
+              progress = Math.min(currentPosition + elapsed, duration) / duration;
+              if (progress === 1 && onEvent) {
+                onEvent(TweenEvent.AnimationComplete);
               }
-            }
-            return {
-              direction,
-              progress: progress / duration
-            };
-          case TweenDirection.Backward:
-            progress = currentPosition - elapsed;
-            if (progress < 0) {
-              direction = TweenDirection.Forward;
-              progress = 0 - progress;
-              if (onEvent) {
-                onEvent(TweenEvent.AnimationInvert)
+              return {
+                direction,
+                progress
+              };
+            case TweenDirection.Backward:
+              progress = Math.min(currentPosition - elapsed, duration) / duration;
+              if (progress === 0 && onEvent) {
+                onEvent(TweenEvent.AnimationComplete);
               }
-            }
-            return {
-              direction,
-              progress: progress / duration
-            };
-        }
-        break;
-      default:
-        return tween;
-    }
-  }, [onEvent]);
+              return {
+                direction,
+                progress
+              };
+          }
+          break;
+        case TweenState.Loop:
+          switch (direction) {
+            case TweenDirection.Forward:
+              progress = (currentPosition + elapsed) % duration;
+              if (progress < currentPosition && onEvent) {
+                onEvent(TweenEvent.AnimationIterate);
+              }
+              return {
+                direction,
+                progress: progress / duration
+              };
+            case TweenDirection.Backward:
+              progress = (currentPosition - elapsed) % duration;
+              if (progress > currentPosition && onEvent) {
+                onEvent(TweenEvent.AnimationIterate);
+              }
+              return {
+                direction,
+                progress: progress / duration
+              };
+          }
+          break;
+        case TweenState.Alternate:
+          switch (direction) {
+            case TweenDirection.Forward:
+              progress = currentPosition + elapsed;
+              if (progress > duration) {
+                direction = TweenDirection.Backward;
+                progress = duration - (progress % duration);
+                if (onEvent) {
+                  onEvent(TweenEvent.AnimationInvert);
+                }
+              }
+              return {
+                direction,
+                progress: progress / duration
+              };
+            case TweenDirection.Backward:
+              progress = currentPosition - elapsed;
+              if (progress < 0) {
+                direction = TweenDirection.Forward;
+                progress = 0 - progress;
+                if (onEvent) {
+                  onEvent(TweenEvent.AnimationInvert);
+                }
+              }
+              return {
+                direction,
+                progress: progress / duration
+              };
+          }
+          break;
+        default:
+          return tween;
+      }
+    },
+    [onEvent]
+  );
   const { frameId, elapsed } = useContext(AnimationContext);
   const [params, setParams] = useState<EasingParams>([]);
   const [tweenState, updateTweenState] = useReducer(tweenReducer, {
@@ -357,7 +360,7 @@ export const useTweenAnimation = <T extends TweenData>(
 
   const reverse = useCallback(() => {
     if (onEvent) {
-      onEvent(TweenEvent.AnimationInvert)
+      onEvent(TweenEvent.AnimationInvert);
     }
     updateTweenState({
       type,
