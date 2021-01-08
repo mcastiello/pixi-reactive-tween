@@ -377,7 +377,7 @@ export const useTweenAnimation = <T extends TweenData>(
 
   useEffect(() => {
     if (easeParams && easeParams.length > 0) {
-      const params = easeParams.split(/,\s+/).map((value) => Number(value));
+      const params = easeParams.split(/,\s*/).map((value) => Number(value));
       setParams(params);
     } else {
       setParams([]);
