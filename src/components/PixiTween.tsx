@@ -1,8 +1,8 @@
 import { PropsContext } from 'pixi-reactive';
-import React, { useContext, useEffect } from 'react';
+import React, { useCallback, useContext, useEffect } from 'react';
 import { useTweenAnimation } from '../hooks/tweenHooks';
 import { TweenContext } from '../contexts/TweenContext';
-import { TweenComponentProps, TweenContextType, TweenData, TweenDirection, TweenProps, TweenState } from '../types';
+import { TweenComponentProps, TweenContextType, TweenData, TweenDirection, TweenEvent, TweenProps, TweenState } from '../types';
 
 const PixiTween: React.FC<TweenComponentProps> = ({
   duration = 1000,
@@ -12,10 +12,33 @@ const PixiTween: React.FC<TweenComponentProps> = ({
   direction = TweenDirection.Forward,
   time,
   children,
+  onAnimationStart,
+  onAnimationComplete,
+  onAnimationInvert,
+  onAnimationIterate,
   ...props
 }) => {
   const { properties, updateProperties } = useContext(PropsContext);
-  const tween = useTweenAnimation(properties as TweenData, props, duration, ease);
+  const handler = useCallback(
+    (event: TweenEvent) => {
+      switch (event) {
+        case TweenEvent.AnimationStart:
+          onAnimationStart && onAnimationStart();
+          break;
+        case TweenEvent.AnimationComplete:
+          onAnimationComplete && onAnimationComplete();
+          break;
+        case TweenEvent.AnimationIterate:
+          onAnimationInvert && onAnimationInvert();
+          break;
+        case TweenEvent.AnimationInvert:
+          onAnimationIterate && onAnimationIterate();
+          break;
+      }
+    },
+    [onAnimationStart, onAnimationComplete, onAnimationInvert, onAnimationIterate]
+  );
+  const tween = useTweenAnimation(properties as TweenData, props, duration, ease, easeParams, handler);
   const { state: tweenState, controls } = tween;
   const { setTime, play, stop, alternate, loop } = controls;
 

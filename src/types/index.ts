@@ -8,5 +8,6 @@ export {
   TweenData,
   TweenContextType,
   TweenProps,
-  TweenComponentProps
+  TweenComponentProps,
+  TweenEvent
 } from './Tween';

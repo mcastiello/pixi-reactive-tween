@@ -1,6 +1,6 @@
 {
   "name": "pixi-reactive-tween",
-  "version": "0.1.0-rc1",
+  "version": "0.1.0",
   "description": "Add support for tween animations to the pixi-reactive library",
   "author": "mcastiello",
   "license": "MIT",

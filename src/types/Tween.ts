@@ -50,4 +50,15 @@ export type TweenComponentProps = TweenProps & {
   state?: TweenState;
   time?: number;
   direction?: TweenDirection;
+  onAnimationStart?: () => void;
+  onAnimationComplete?: () => void;
+  onAnimationInvert?: () => void;
+  onAnimationIterate?: () => void;
 };
+
+export enum TweenEvent {
+  AnimationStart,
+  AnimationComplete,
+  AnimationIterate,
+  AnimationInvert
+}
